@@ -1,0 +1,8 @@
+# Generated outputs of build_feed.py — reproducible from catalog/_widgets/
+catalog/_feed.json
+artifacts/
+
+# Python / tooling
+__pycache__/
+*.pyc
+.DS_Store

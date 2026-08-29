@@ -1,0 +1,7 @@
+id: sample_widget
+name: Sample Widget
+summary: Minimal community widget that renders a rounded box.
+author: rndrSBC
+version: 0.1.0
+license: MIT
+min_core: "0.1.0"

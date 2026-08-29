@@ -1,0 +1,39 @@
+name: Catalog CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  validate-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Build + validate feed
+        run: python3 build_feed.py
+      - name: Show feed always (never fail on change)
+        run: git diff --stat catalog/_feed.json || true
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: validate-and-build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment: github-pages
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Build feed + artifacts
+        run: python3 build_feed.py
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: "."
+      - uses: actions/deploy-pages@v4
