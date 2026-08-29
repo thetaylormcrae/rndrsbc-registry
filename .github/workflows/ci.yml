@@ -30,9 +30,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Build feed + artifacts
-        run: python3 build_feed.py
       - uses: actions/configure-pages@v5
+        id: pages
+      - name: Build feed + artifacts (absolute URLs against Pages host)
+        run: |
+          # The registry serves on the custom Pages domain, so artifact URLs are
+          # absolute against it — fetchable by the engine without a redirect hop.
+          python3 build_feed.py --host "https://taylor.mcrae.site/rndrsbc-registry"
       - uses: actions/upload-pages-artifact@v3
         with:
           path: "."

@@ -39,7 +39,14 @@ def main():
     ap.add_argument("--path", default="catalog/_widgets")
     ap.add_argument("--out-feed", default="catalog/_feed.json")
     ap.add_argument("--artifacts", default="artifacts")
+    # Base URL of the deployed artifact host (GitHub Pages). When provided, the
+    # feed's per-widget ``url`` is made absolute against it so the engine can
+    # download the artifact directly. Omit (or leave blank) for local/PR builds
+    # where the deployment host is not yet known.
+    ap.add_argument("--host", default="",
+                    help="Pages base URL, e.g. https://user.github.io/repo")
     args = ap.parse_args()
+    host = args.host.rstrip("/")
 
     widgets = []
     widget_dirs = [d for d in os.listdir(args.path) if os.path.isdir(os.path.join(args.path, d))]
@@ -49,8 +56,9 @@ def main():
     for wid in sorted(widget_dirs):
         wdir = os.path.join(args.path, wid)
         artifact, sha, files = package_widget(wdir, args.artifacts)
+        base = f"{host}/" if host else ""
         entry = {"id": wid, "version": "0.1.0", "sha256": sha,
-                 "url": f"https://<host>/artifacts/{artifact}", "entry": "widget.py"}
+                 "url": f"{base}artifacts/{artifact}", "entry": "widget.py"}
         # merge metadata.yaml if present
         meta = os.path.join(wdir, "metadata.yaml")
         if os.path.exists(meta):
